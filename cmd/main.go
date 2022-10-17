@@ -59,8 +59,8 @@ func main() {
 				log.Println(action.Type) */
 				w := tabwriter.NewWriter(os.Stdout, 1, 1, 1, ' ', 0)
 				fmt.Fprintln(w, "Type\t\tName\t\tPrice\t\tRank\t\tFloorPr")
-				var priceStr string = strconv.FormatFloat(action.Price, 'E', -1, 32)
-				var fpStr string = strconv.FormatFloat(action.FloorPrice, 'E', -1, 32)
+				var priceStr string = strconv.FormatFloat(action.Price, 'f', 2, 64)
+				var fpStr string = strconv.FormatFloat(action.FloorPrice, 'f', 2, 64)
 				var rankStr string = strconv.Itoa(action.Rank)
 				fmt.Fprintln(w, action.Type+"\t\t"+action.Name+"\t\t"+priceStr+"\t\t"+rankStr+"\t\t"+fpStr+"\t\t")
 				fmt.Fprintln(w, "------------------------------------------------------------------------------")
