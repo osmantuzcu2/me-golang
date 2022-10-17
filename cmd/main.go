@@ -1,8 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
+	"strconv"
+	"text/tabwriter"
 
 	"github.com/joho/godotenv"
 	"github.com/synthonier/me-sniper/pkg/models"
@@ -12,6 +15,7 @@ import (
 
 func main() {
 	log.Println("Bot started")
+
 	err := godotenv.Load()
 	checkError(err)
 
@@ -40,7 +44,27 @@ func main() {
 			action := action
 
 			go func() {
-				log.Println(action)
+				/* log.Println(action.BlockTimestamp)
+				log.Println(action.FloorPrice)
+				log.Println(action.MintAddress)
+				log.Println(action.Name)
+				log.Println(action.Price)
+				log.Println(action.Rank)
+				log.Println(action.RarityStr)
+				log.Println(action.Seller)
+				log.Println(action.Supply)
+				log.Println(action.Symbol)
+				log.Println(action.Timestamp)
+				log.Println(action.TokenAddress)
+				log.Println(action.Type) */
+				w := tabwriter.NewWriter(os.Stdout, 1, 1, 1, ' ', 0)
+				fmt.Fprintln(w, "Type\t\tName\t\tPrice\t\tRank\t\tFloorPr")
+				var priceStr string = strconv.FormatFloat(action.Price, 'E', -1, 32)
+				var fpStr string = strconv.FormatFloat(action.FloorPrice, 'E', -1, 32)
+				var rankStr string = strconv.Itoa(action.Rank)
+				fmt.Fprintln(w, action.Type+"\t\t"+action.Name+"\t\t"+priceStr+"\t\t"+rankStr+"\t\t"+fpStr+"\t\t")
+				fmt.Fprintln(w, "------------------------------------------------------------------------------")
+				w.Flush()
 			}()
 		}
 	}

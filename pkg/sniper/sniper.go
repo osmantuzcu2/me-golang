@@ -84,14 +84,15 @@ func (s *Sniper) GetTransaction(signature string) {
 		//print transection
 		//log.Println(transaction)
 		if err != nil || transaction == nil {
-			log.Println(err)
+			//print error
+			//log.Println(err)
 			time.Sleep(time.Millisecond * 500)
 			continue
 		}
 	}
 
 	token := s.parseTransaction(transaction)
-	log.Println(token)
+	//log.Println(token)
 	if token != nil {
 
 		s.actions <- token
@@ -158,8 +159,8 @@ func getActionPrice(logs []string) float64 {
 }
 
 func getActionType(preTokenOwner, postTokenOwner string) string {
-	log.Println(preTokenOwner)
-	log.Println(postTokenOwner)
+	//log.Println(preTokenOwner)
+	//log.Println(postTokenOwner)
 	if preTokenOwner == MEPublicKeyStr && postTokenOwner != MEPublicKeyStr {
 		return "buy"
 	} else if postTokenOwner == MEPublicKeyStr {
