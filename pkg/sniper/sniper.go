@@ -22,10 +22,16 @@ type Sniper struct {
 	cli         *client.Client
 	actions     chan *models.Token
 	collections map[string]*models.Token
+	config      *models.Config
 }
 
 func New(endpoint string, actions chan *models.Token) (*Sniper, error) {
+
 	collections, err := utils.LoadCollections()
+	if err != nil {
+		return nil, err
+	}
+	config, err := utils.LoadConfig()
 	if err != nil {
 		return nil, err
 	}
@@ -35,6 +41,7 @@ func New(endpoint string, actions chan *models.Token) (*Sniper, error) {
 		cli:         client.NewClient(endpoint),
 		actions:     actions,
 		collections: collections,
+		config:      config,
 	}, nil
 }
 
@@ -45,8 +52,12 @@ var (
 
 func (s *Sniper) Start() error {
 	log.Println("Sniper started")
+	log.Println("Reading config file")
+	log.Println("Filters : Max Rank-> " + strconv.Itoa(s.config.Rank.Max) + " | Max Price->" + strconv.Itoa(s.config.Price.Max))
+
 	// For websocket connection public wss will be enought
 	client, err := ws.Connect(s.ctx, rpc_.MainNetBeta_WS)
+
 	if err != nil {
 		return err
 	}
@@ -63,16 +74,17 @@ func (s *Sniper) Start() error {
 			return err
 		}
 
-		go s.GetTransaction(got.Value.Signature.String())
+		go s.GetTransaction(got.Value.Signature.String(), time.Now().UTC().Unix())
 	}
 }
 
-func (s *Sniper) GetTransaction(signature string) {
+func (s *Sniper) GetTransaction(signature string, timestamp int64) {
 
 	var (
 		transaction *client.GetTransactionResponse
 		err         error
 	)
+
 	// Sleep until transaction data can be obtained
 	time.Sleep(time.Millisecond*time.Duration(rand.Intn(1000)) + 500)
 	for transaction == nil {
@@ -82,10 +94,13 @@ func (s *Sniper) GetTransaction(signature string) {
 			rpc.GetTransactionConfig{Commitment: "confirmed"},
 		)
 		//print transection
-		//log.Println(transaction)
+		//log.Println("transection : ", transaction)
 		if err != nil || transaction == nil {
 			//print error
-			//log.Println(err)
+			if err != nil {
+				log.Println("Error: ", err)
+			}
+			//log.Println("Error: ", err)
 			time.Sleep(time.Millisecond * 500)
 			continue
 		}
@@ -96,7 +111,9 @@ func (s *Sniper) GetTransaction(signature string) {
 	if token != nil {
 
 		s.actions <- token
+		//}
 	}
+
 }
 
 func (s Sniper) parseTransaction(transaction *client.GetTransactionResponse) *models.Token {
@@ -107,7 +124,7 @@ func (s Sniper) parseTransaction(transaction *client.GetTransactionResponse) *mo
 
 	preTokenBalances := transaction.Meta.PreTokenBalances
 	postTokenBalances := transaction.Meta.PostTokenBalances
-
+	//log.Println("preTokenBalances : ", preTokenBalances[0])
 	if len(preTokenBalances) == 0 {
 		return nil
 	}

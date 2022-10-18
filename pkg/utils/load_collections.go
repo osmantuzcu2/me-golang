@@ -9,7 +9,7 @@ import (
 
 func LoadCollections() (map[string]*models.Token, error) {
 	var collections map[string]*models.Token
-	req, _ := os.ReadFile("./data/collections.json")
+	req, _ := os.ReadFile("./data/collections2.json")
 	err := json.Unmarshal(req, &collections)
 	if err != nil {
 		return nil, err
