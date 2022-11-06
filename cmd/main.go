@@ -84,6 +84,7 @@ func main() {
 						fmt.Fprintln(w, "------------------------------------------------------------------------------")
 						fmt.Fprintln(w, "Type\t\tName\t\tPrice\t\tRank\t\tFloorPr\t\tTimeStamp\t\tBlockTime")
 						fmt.Fprintln(w, action.Type+"\t\t"+action.Name+"\t\t"+priceStr+"\t\t"+rankStr+"\t\t2.73\t\t"+dateStr+"\t\t"+blockDateStr)
+						fmt.Fprintln(w, action.MintAddress)
 						fmt.Fprintln(w, "------------------------------------------------------------------------------")
 						time.Sleep(time.Millisecond * 500)
 						w.Flush()
